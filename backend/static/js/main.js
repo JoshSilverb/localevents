@@ -7,6 +7,8 @@ const geoLocatorOptions = {
 var map;
 var coords;
 var radius = 5000;
+var circle;
+var infoWindow;
 
 function geoLocatorSuccess(pos) {
 	const crd = pos.coords;
@@ -16,15 +18,17 @@ function geoLocatorSuccess(pos) {
 	console.log(`Longitude: ${crd.longitude}`);
 	console.log(`More or less ${crd.accuracy} meters.`);
 
-	console.log(typeof parseFloat(crd.latitude))
 	var coords = {lat: parseFloat(crd.latitude), lng: parseFloat(crd.longitude)}
+	
 	loadMap(coords)
+	// Create an info window to share between markers.
+	infoWindow = new google.maps.InfoWindow()
     loadCircle(coords, radius)
+	loadEvents(coords, radius)
 }
 
 function geoLocatorError(err) {
 	console.warn(`ERROR(${err.code}): ${err.message}`);
-	// crd = {lat: -25.363, lng: 131.044}
 }
 
 function initMap() {
@@ -35,25 +39,27 @@ function initMap() {
 	geoLocatorSuccess({coords: {latitude: 48.1645086, longitude: 17.0781901, accuracy: 69}})
 }
 
-function loadMap(coords) {
+async function loadMap(coords) {
 	console.log(typeof coords.lat)
 	console.log(coords)
-	// let latlong = new google.maps.LatLng(coords.lat, coords.lng)
 
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 11.5,
-		center: coords
+		center: coords,
+		mapId: "2c6039eb9c169d8d"
     });
     var marker = new google.maps.Marker({
 		position: coords,
-		map: map
+		map: map,
+		icon: '/static/icons/blue_circle.png'
     });
 	console.log(typeof map)
 
 }
 
+
 function loadCircle(center, radius) {
-	console.log(typeof map)
+	// console.log(typeof map)
 	let circleOptions = {
 		draggable: false,
 		editable: false,
@@ -66,42 +72,54 @@ function loadCircle(center, radius) {
 		center: center,
 		radius: radius
 	};
-	
-	var circle = new google.maps.Circle(circleOptions);
 
+	console.log(circleOptions)
+	circle = new google.maps.Circle(circleOptions);
 }
+
 
 function refreshCircle() {
 	let e = document.getElementById("radiusSelect");
 	radius = parseFloat(e.value);
-	loadCircle(coords, radius)
+	circle.setRadius(radius)
 }
 
-// var map = new google.maps.Map(canvas, mapOptions);
 
-// var circleOptions = {
-// 	draggable: false,
-// 	editable: true,
-//    	strokeColor: '#eeeeee',
-//    	strokeOpacity: 0.8,
-// 	strokeWeight: 1,
-//    	fillColor: '#FF0000',
-//    	fillOpacity: 0.15,
-//    	map: map,
-//    	center: myLatlng,
-//    	radius: 2000
-// };
-// var circle = new google.maps.Circle(circleOptions);
+async function loadEvents(center, radius) {
+	console.log("getting events")
+	let queryURL = '/events/?center_lat=' + String(center.lat) + '&center_lng=' + String(center.lng) + '&radius=' + String(radius)
+	const response = await fetch(queryURL);
+	const respjson = await response.json(); //extract JSON from the http response
+	const events = respjson['events']
+	console.log(events)
 
-// google.maps.event.addListener(circle, 'center_changed', update);
-// google.maps.event.addListener(circle, 'radius_changed', update);
-	
-// function update() {
-// 	var debug = document.getElementById("debug");
-// 	var d = Math.pow(10,5);
-// 	debug.innerHTML = "lat: " + Math.round(circle.getCenter().lat()*d)/d + "<br>";
-// 	debug.innerHTML += "lng: " + Math.round(circle.getCenter().lng()*d)/d + "<br>";
-// 	debug.innerHTML += "radius: " + Math.round(circle.getRadius()) + " m<br>";
-// }
 
-// update();
+	events.forEach(({ lat, lng, label }, i) => {
+		console.log(lat, lng, label )
+		position = {lat: lat, lng: lng}
+		console.log(position)
+
+		const pinView = new google.maps.marker.PinView({
+			glyph: `${i + 1}`,
+		});
+
+		const marker = new google.maps.marker.AdvancedMarkerView({
+			position,
+			map,
+			title: `${label}`,
+			content: pinView.element,
+		});
+		
+		// Add a click listener for each marker, and set up the info window.
+		marker.addListener("click", ({ domEvent, latLng }) => {
+			const { target } = domEvent;
+	  
+			infoWindow.close();
+			infoWindow.setContent(marker.title);
+			infoWindow.open(marker.map, marker);
+		});
+		
+	});
+
+
+}
