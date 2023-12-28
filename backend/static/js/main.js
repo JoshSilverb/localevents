@@ -32,8 +32,8 @@ function geoLocatorError(err) {
 }
 
 function initMap() {
-	let e = document.getElementById("radiusSelect");
-	radius = parseFloat(e.value);
+	// let e = document.getElementById("radiusSelect");
+	// radius = parseFloat(e.value);
 	// uncomment after testing
 	//navigator.geolocation.getCurrentPosition(geoLocatorSuccess, geoLocatorError, geoLocatorOptions);
 	geoLocatorSuccess({coords: {latitude: 48.1645086, longitude: 17.0781901, accuracy: 69}})
@@ -121,5 +121,6 @@ async function loadEvents(center, radius) {
 		
 	});
 
-
 }
+
+

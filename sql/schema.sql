@@ -10,9 +10,11 @@ CREATE TABLE users(
 CREATE TABLE events(
     owner VARCHAR(20) NOT NULL,
     eventname VARCHAR(40) NOT NULL,
-    latitude FLOAT,
-    longitude FLOAT,
-    eventtime TIMESTAMP,
+    latitude FLOAT NOT NULL,
+    longitude FLOAT NOT NULL,
+    eventaddress VARCHAR(80) NOT NULL,
+    eventtime TIMESTAMP NOT NULL,
+    eventdesc VARCHAR(512),
     eventid SERIAL NOT NULL,
     PRIMARY KEY (owner, eventid),
     FOREIGN KEY (owner) REFERENCES users (username) ON DELETE CASCADE ON UPDATE CASCADE

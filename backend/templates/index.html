@@ -1,37 +1,16 @@
 {% extends "base.html" %}
 {% block content %}    
     <div class="container text-center">
-        <!-- <div class="col"> -->
             <div class="row g-2">
                 <h1>Find events below</h1>
             </div>
             
-
-            <div class="container">
-                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                <p class="col-2">Select search radius:</p>
-                <select class="form-select col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0" aria-label="Default select example" id="radiusSelect" onchange="refreshCircle()">
-                    <option selected value="5000">5km</option>
-                    <option value="10000">10km</option>
-                    <option value="15000">15km</option>
-                </select>
-    
-                </div>
-            </div>
-
-            
-            <!-- <div id="map-container-google-1" class="z-depth-1-half map-container" style="height: 500px">
-                <iframe src="https://maps.google.com/maps?q=manhatan&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"
-                    style="border:0" allowfullscreen></iframe>
-            </div> -->
-
 
             <div class="row g-2 mt-4 mb-4">
                 <div class="row align-items-center">
                     <div class="container" id="map"></div>
                 </div>
             </div>
-        <!-- </div> -->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
